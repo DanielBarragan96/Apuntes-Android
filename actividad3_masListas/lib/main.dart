@@ -92,8 +92,14 @@ class _HomePageState extends State<HomePage> {
                     scrollDirection: Axis.horizontal,
                     itemCount: widget._listElements.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return ListItem(
-                        content: widget._listElements[index],
+                      return GestureDetector(
+                        onTap: () => {
+                          _showSelectionDialog(
+                              widget._listElements[index]["title"], context)
+                        },
+                        child: ListItem(
+                          content: widget._listElements[index],
+                        ),
                       );
                     },
                   ),
