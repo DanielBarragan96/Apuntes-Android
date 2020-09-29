@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class Confidential extends StatefulWidget {
   Confidential({Key key}) : super(key: key);
+
   @override
   _ConfidentialState createState() => _ConfidentialState();
 }

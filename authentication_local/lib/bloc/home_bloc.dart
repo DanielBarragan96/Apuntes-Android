@@ -13,34 +13,56 @@ part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final LocalAuthentication _localAuth = LocalAuthentication();
+
   HomeBloc() : super(HomeInitial());
 
   @override
   Stream<HomeState> mapEventToState(
     HomeEvent event,
   ) async* {
-    // TODO: implement mapEventToState
+    if (event is LoadImageEvent) {
+      try {
+        File img = await _pickImage();
+        yield LoadedImageState(image: img);
+      } catch (e) {
+        yield AuthenticationErrorState(message: "No se pudo cargar imagen..");
+      }
+    } else if (event is AuthenticationEvent) {
+      if (await _checkBiometrics()) {
+        bool authenticated = await _authentication();
+        yield authenticated
+            ? AuthenticationDoneState()
+            : AuthenticationErrorState(
+                message: "Error no se pudo autenticar..",
+              );
+      } else
+        AuthenticationErrorState(
+          message: "Error no se pudo autenticar..",
+        );
+    } else if (event is OpenLinkEvent) {
+      //
+    }
   }
 
   Future<File> _pickImage() async {
     final picker = ImagePicker();
     final PickedFile chooseImage = await picker.getImage(
       source: ImageSource.camera,
-      maxHeight: 720, //adapta imagen a maximo 720p de altura
-      maxWidth: 720, //adapta imagen a maximo 720p de ancho
-      imageQuality: 85, //reduce calidad de imagen al 85%
+      maxHeight: 720,
+      maxWidth: 720,
+      imageQuality: 85,
     );
     return File(chooseImage.path);
   }
 
   Future<bool> _checkBiometrics() async {
     try {
-      // List<BiometricType> availableBiometrics = await _localAuth.getAvailableBiometrics();
+      //List<BiometricType> availableBiometrics = await _localAuth.getAvailableBiometrics();
       return _localAuth.canCheckBiometrics;
     } catch (e) {
       print(e.toString());
-      // if (e.code == auth_error.notAvailable) {
-      ////hacer algo
+      // if(e.code == auth_error.notAvailable){
+      //   // hacer algo
       // }
       return false;
     }

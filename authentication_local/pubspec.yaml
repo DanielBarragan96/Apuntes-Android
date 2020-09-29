@@ -1,4 +1,4 @@
-name: authentication_local
+name: autenticacion_local
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -23,11 +23,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_bloc: ^6.0.5 #Permite usa BLoC
-  equatable: ^1.2.5 #Simplify Equality Comparisons
-  image_picker: ^0.6.7+8 #Permite seleccionar imagenes de la galeria
-  animated_background: ^1.0.5 #Crea animated background
-  local_auth: ^0.6.3+1 #Permite autenticar usuario con huella digital, etc
+  flutter_bloc: ^6.0.5
+  equatable: ^1.2.5
+  image_picker: ^0.6.7+8
+  animated_background: ^1.0.5
+  local_auth: ^0.6.3+1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

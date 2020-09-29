@@ -17,7 +17,7 @@ class AuthenticationEvent extends HomeEvent {
   List<Object> get props => [];
 }
 
-class LoadedEvent extends HomeEvent {
+class OpenLinkEvent extends HomeEvent {
   @override
   List<Object> get props => [];
 }
