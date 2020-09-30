@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   HomeBloc _homeBloc;
   File choosenImage;
   TextEditingController _textEditingController = TextEditingController(
-    text: "www.google.com",
+    text: "https://www.google.com/",
   );
 
   @override
@@ -111,7 +111,9 @@ class _HomePageState extends State<HomePage> {
           controller: _textEditingController,
         ),
         MaterialButton(
-          onPressed: () {},
+          onPressed: () {
+            _homeBloc.add(OpenLinkEvent(url: _textEditingController.text));
+          },
           color: Colors.blue[100],
           child: Text("Ir al link"),
         ),

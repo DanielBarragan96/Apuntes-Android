@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
+import 'package:url_launcher/url_launcher.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
@@ -40,7 +41,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           message: "Error no se pudo autenticar..",
         );
     } else if (event is OpenLinkEvent) {
-      //
+      try {
+        await _launchURL(event.url);
+      } catch (e) {
+        yield AuthenticationErrorState(message: "Fallo url");
+      }
     }
   }
 
@@ -78,6 +83,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } catch (e) {
       print(e.toString());
       return false;
+    }
+  }
+
+  _launchURL(String url) async {
+    //const url = 'https://www.google.com/';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 }

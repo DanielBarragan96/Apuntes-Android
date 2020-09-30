@@ -18,6 +18,9 @@ class AuthenticationEvent extends HomeEvent {
 }
 
 class OpenLinkEvent extends HomeEvent {
+  final String url;
+
+  OpenLinkEvent({@required this.url});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [url];
 }
