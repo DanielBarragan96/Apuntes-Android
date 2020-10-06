@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1002905208882",
+    "firebase_url": "https://act-login-labeling-firebase.firebaseio.com",
+    "project_id": "act-login-labeling-firebase",
+    "storage_bucket": "act-login-labeling-firebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002905208882:android:dcbc876cd210c6cb49d42b",
+        "android_client_info": {
+          "package_name": "com.example.image_labeling_and_barcodes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1002905208882-vsufn0d2vlrjuvcso9so61s7dtfsj5j4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.image_labeling_and_barcodes",
+            "certificate_hash": "9365178c56d75dd5c36ea98246bac5ec378b3578"
+          }
+        },
+        {
+          "client_id": "1002905208882-7u9ellkk46018oaqbufipnd31vegis1a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2PLWJhE4NE2e-enONAA9ZEnpFHNQmJJ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1002905208882-7u9ellkk46018oaqbufipnd31vegis1a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
