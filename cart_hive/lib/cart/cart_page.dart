@@ -45,7 +45,7 @@ class _CartPageState extends State<CartPage> {
                         }
                       },
                       background: Container(
-                        color: Colors.white,
+                        color: Colors.red,
                         child: Icon(Icons.delete),
                         alignment: Alignment.centerLeft,
                       ),
