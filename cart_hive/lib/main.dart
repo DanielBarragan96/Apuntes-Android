@@ -5,6 +5,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:hive/hive.dart';
 
 void main() async {
+  //init hive
+  WidgetsFlutterBinding.ensureInitialized();
+  final _localStorage = await getApplicationDocumentsDirectory();
+  Hive.init(_localStorage.path);
+  await Hive.openBox("Carrito");
+
+  //run app
   runApp(MyApp());
 }
 
