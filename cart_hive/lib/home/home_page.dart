@@ -4,6 +4,7 @@ import 'package:cart_hive/home/item_home.dart';
 import 'package:cart_hive/model/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -71,6 +72,13 @@ class _HomePageState extends State<HomePage> {
       ),
     ];
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _homeBloc.close();
+    Hive.close();
+    super.dispose();
   }
 
   void _addProduct(Product prod) {
