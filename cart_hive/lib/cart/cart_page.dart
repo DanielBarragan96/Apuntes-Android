@@ -26,15 +26,38 @@ class _CartPageState extends State<CartPage> {
           },
           builder: (context, state) {
             if (state is ElementsLoadedState) {
-              return ListView.builder(
-                itemCount: state.prodsList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text("${state.prodsList[index].name}"),
-                    subtitle: Text("${state.prodsList[index].price}"),
-                  );
-                },
-              );
+              if (state.prodsList == null) {
+                return Text("data");
+              } else {
+                return ListView.builder(
+                  itemCount: state.prodsList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Dismissible(
+                      key: UniqueKey(), //Key para cada elemento
+                      child: ListTile(
+                        title: Text("${state.prodsList[index].name}"),
+                        subtitle: Text("${state.prodsList[index].price}"),
+                      ),
+                      onDismissed: (direction) {
+                        if (direction == DismissDirection.startToEnd) {
+                          BlocProvider.of<CartBloc>(context)
+                              .add(RemoveProductEvent(element: index));
+                        }
+                      },
+                      background: Container(
+                        color: Colors.white,
+                        child: Icon(Icons.delete),
+                        alignment: Alignment.centerLeft,
+                      ),
+                      secondaryBackground: Container(
+                        color: Colors.red,
+                        child: Icon(Icons.delete),
+                        alignment: Alignment.centerLeft,
+                      ),
+                    );
+                  },
+                );
+              }
             } else
               return Center(
                 child: Text("No hay elementos"),

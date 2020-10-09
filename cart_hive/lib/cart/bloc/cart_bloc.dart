@@ -13,6 +13,7 @@ part 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
   Box _carritoBox = Hive.box("Carrito");
+  List<Product> _productList = List();
 
   CartBloc() : super(CartInitial());
 
@@ -22,11 +23,25 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   ) async* {
     // TODO: cargar productos
     if (event is LoadProductsEvent) {
-      List<Product> _productList = List();
-      for (var i = 0; i < _carritoBox.length; i++) {
-        _productList.add(_carritoBox.get(i) as Product);
+      try {
+        for (var i = 0; i < _carritoBox.length; i++) {
+          Product aux = _carritoBox.getAt(i) as Product;
+          if (aux != null) {
+            _productList.add(aux);
+          }
+        }
+        yield ElementsLoadedState(prodsList: _productList);
+      } catch (e) {
+        yield ElementsLoadedState(prodsList: _productList);
       }
-      yield ElementsLoadedState(prodsList: _productList);
+    } else if (event is RemoveProductEvent) {
+      _productList.removeAt(event.element);
+      _carritoBox.deleteAt(event.element);
+      if (_productList.isEmpty) {
+        yield CartInitial();
+      } else {
+        yield ElementsLoadedState(prodsList: _productList);
+      }
     }
   }
 }
