@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'model/product.dart';
+
 void main() async {
   //init hive
   WidgetsFlutterBinding.ensureInitialized();
   final _localStorage = await getApplicationDocumentsDirectory();
-  Hive.init(_localStorage.path);
+  Hive
+    ..init(_localStorage.path)
+    ..registerAdapter(CarritoAdapter());
   await Hive.openBox("Carrito");
 
   //run app
