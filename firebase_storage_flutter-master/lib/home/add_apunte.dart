@@ -29,9 +29,9 @@ class _AddApunteState extends State<AddApunte> {
           bloc = HomeBloc()..add(GetDataEvent());
           return bloc;
         },
-        child: BlocListener<HomeBloc, HomeState>(
+        child: BlocConsumer<HomeBloc, HomeState>(
           listener: (context, state) {
-            if (state is ChosenImageFailed) {
+            if (state is ChosenImageFailedState) {
               Scaffold.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
@@ -39,8 +39,7 @@ class _AddApunteState extends State<AddApunte> {
                     content: Text("No se puedo cargar la imagen."),
                   ),
                 );
-            }
-            if (state is FileUploadFailed) {
+            } else if (state is FileUploadFailedState) {
               Scaffold.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
@@ -50,23 +49,16 @@ class _AddApunteState extends State<AddApunte> {
                 );
             }
           },
-          child: BlocBuilder<HomeBloc, HomeState>(
-            builder: (context, state) {
-              if (state is HomeInitial) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if (state is ChosenImageLoaded) {
-                _choosenImage = state.imgPath;
-              }
-              if (state is FileUploaded) {
-                _url = state.fileUrl;
-                _saveData();
-              }
-              return generateAddApuntePage();
-            },
-          ),
+          builder: (context, state) {
+            if (state is ChosenImageLoaded) {
+              _choosenImage = state.imgPath;
+            }
+            if (state is FileUploadedState) {
+              _url = state.fileUrl;
+              _saveData();
+            }
+            return _newApuntePage();
+          },
         ),
       ),
     );
@@ -86,7 +78,7 @@ class _AddApunteState extends State<AddApunte> {
     });
   }
 
-  Widget generateAddApuntePage() {
+  Widget _newApuntePage() {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: SingleChildScrollView(
@@ -145,9 +137,6 @@ class _AddApunteState extends State<AddApunte> {
                       child: RaisedButton(
                         child: Text("Guardar"),
                         onPressed: () {
-                          setState(() {
-                            _isLoading = true;
-                          });
                           bloc.add(UploadFileEvent(file: _choosenImage));
                         },
                       ),

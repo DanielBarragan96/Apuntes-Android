@@ -25,25 +25,63 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     HomeEvent event,
   ) async* {
     if (event is GetDataEvent) {
-      bool dataRetrieved = await _getAllApuntes();
-      if (dataRetrieved)
-        yield CloudStoreGetData();
-      else
-        yield CloudStoreError(errorMessage: "No se pudo recuperar datos");
-    } else if (event is SaveDataEvent) {
-      bool saved =
-          await _saveApunte(event.materia, event.descripcion, event.imageUrl);
-      if (saved) {
+      try {
+        yield DataFetchingState();
         await _getAllApuntes();
-        yield CloudStoreGetData();
-      } else {
-        yield CloudStoreError(
-            errorMessage:
-                "Ha ocurrido un error inesperado. Intente guardar mas tarde");
+        yield DataRetrievedState();
+      } catch (e) {
+        yield DataSavedErrorState(errorMessage: "No se pudo recuperar datos");
+      }
+    } else if (event is SaveDataEvent) {
+      try {
+        await _saveApunte(
+          event.materia,
+          event.descripcion,
+          event.imageUrl,
+        );
+        _apuntesList.add(
+          Apunte(
+            materia: event.materia,
+            descripcion: event.descripcion,
+            imageUrl: event.imageUrl,
+          ),
+        );
+
+        yield DataSavedState();
+        yield DataRetrievedState();
+      } catch (e) {
+        yield DataSavedErrorState(
+          errorMessage:
+              "Ha ocurrido un error ineperado. Intente guardar mas tarde",
+        );
       }
     } else if (event is UploadFileEvent) {
-      File _chosenImage = await _chooseImage();
-      if (_chosenImage != null) {}
+      try {
+        String imageUrl = await _uploadPicture(event.file);
+        if (imageUrl != null)
+          yield FileUploadedState(fileUrl: imageUrl);
+        else
+          yield FileUploadFailedState();
+      } catch (e) {
+        yield FileUploadFailedState();
+      }
+    } else if (event is ChooseImageEvent) {
+      File chosenImage = await _chooseImage();
+      if (chosenImage == null)
+        yield ChosenImageFailedState();
+      else
+        yield ChosenImageLoaded(imgPath: chosenImage);
+    } else if (event is RemoveDataEvent) {
+      try {
+        await _documentsList[event.index].reference.delete();
+        await _getAllApuntes();
+
+        // _documentsList.removeAt(event.index);
+        // _apuntesList.removeAt(event.index);
+        yield DataRemovedState();
+      } catch (e) {
+        yield DataSavedErrorState(errorMessage: "No se pudo eliminar..");
+      }
     }
   }
 
@@ -60,52 +98,48 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<String> _uploadPicture(File image) async {
     String imagePath = image.path;
-    //Referencia al storage de Firebase
+    // referencia al storage de firebase
     StorageReference reference = FirebaseStorage.instance
         .ref()
         .child("apuntes/${Path.basename(imagePath)}");
-    //Subir archivo a Firebase
+
+    // subir el archivo a firebase
     StorageUploadTask uploadTask = reference.putFile(image);
     await uploadTask.onComplete;
-    //Recuperar la url del archivo que acabamos de subir
-    dynamic imageUrl = await reference.getDownloadURL();
-    return imageUrl;
+
+    // recuperar la url del archivo que acabamos de subir
+    dynamic imageURL = await reference.getDownloadURL();
+    return imageURL;
   }
 
-  Future<bool> _saveApunte(
-      String materia, String descripcion, String imageUrl) async {
-    try {
-      //Crea un documento en la collection de apuntes
-      await FirebaseFirestore.instance.collection("apuntes").doc().set({
-        "materia": materia,
-        "descripcion": descripcion,
-        "imageUrl": imageUrl
-      });
-      return true;
-    } catch (e) {
-      print(e.toString());
-      return false;
-    }
+  Future _saveApunte(
+    String materia,
+    String descripcion,
+    String imageUrl,
+  ) async {
+    // Crea un doc en la collection de apuntes
+
+    await FirebaseFirestore.instance.collection("apuntes").doc().set({
+      "materia": materia,
+      "descripcion": descripcion,
+      "imagen": imageUrl,
+    });
   }
 
-  Future<bool> _getAllApuntes() async {
-    try {
-      // recuperar lista de documentos guardados enn cloud FireStore
-      var apuntes =
-          await FirebaseFirestore.instance.collection("apuntes").get();
-      _apuntesList = apuntes.docs
-          //mapear a objeto de dart (Apunte)
-          .map((element) => Apunte(
-                materia: element["materia"],
-                descripcion: element["descripcion"],
-                imageUrl: element["imageUrl"],
-              ))
-          //agregar objetos a una lista
-          .toList();
-      return true;
-    } catch (e) {
-      print(e.toString());
-      return false;
-    }
+  Future _getAllApuntes() async {
+    // recuperar lista de docs guardados en Cloud firestore
+    // mapear a objeto de dart (Apunte)
+    // agregar cada ojeto a una lista
+    var apuntes = await FirebaseFirestore.instance.collection("apuntes").get();
+    _documentsList = apuntes.docs;
+    _apuntesList = apuntes.docs
+        .map(
+          (elemento) => Apunte(
+            materia: elemento["materia"],
+            descripcion: elemento["descripcion"],
+            imageUrl: elemento["imagen"],
+          ),
+        )
+        .toList();
   }
 }
