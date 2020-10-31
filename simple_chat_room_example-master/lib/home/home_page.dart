@@ -14,6 +14,7 @@ class _HomePageState extends State<HomePage> {
   User _user;
   User _user2;
   DatabaseReference _firebaseDatabase;
+  DatabaseReference _firebaseDatabase2;
   final _textController = TextEditingController();
 
   @override
@@ -23,7 +24,10 @@ class _HomePageState extends State<HomePage> {
     _user2 = _user;
     _firebaseDatabase = FirebaseDatabase.instance
         .reference()
-        .child("profiles/${_user.uid}/chats/${_user2.uid}/messages");
+        .child("profiles/${_user.uid}/chats/id_user2/messages");
+    _firebaseDatabase2 = FirebaseDatabase.instance
+        .reference()
+        .child("profiles/id_user2/chats/${_user.uid}/messages");
     super.initState();
   }
 
@@ -102,6 +106,13 @@ class _HomePageState extends State<HomePage> {
     _textController.clear();
     setState(() {});
     _firebaseDatabase.push().set({
+      "senderName": _user.displayName,
+      "senderId": _user.uid,
+      "text": text,
+      "timestamp": DateTime.now().millisecondsSinceEpoch,
+      "senderPhotoUrl": _user.photoURL,
+    });
+    _firebaseDatabase2.push().set({
       "senderName": _user.displayName,
       "senderId": _user.uid,
       "text": text,
