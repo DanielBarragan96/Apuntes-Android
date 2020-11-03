@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:noticias/noticias/bloc/noticias_bloc.dart';
-import 'package:noticias/noticias/noticia_deportes.dart';
-import 'package:noticias/noticias/noticia_negocios.dart';
+import 'created/create.dart';
+import 'new/my_news.dart';
+import 'noticias/noticias.dart';
+import 'search/search.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -12,39 +12,50 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _tabsList = [
-    Tab(icon: Icon(Icons.article), text: "Deportes"),
-    Tab(icon: Icon(Icons.article), text: "Negocios"),
+  int _currentPageIndex = 0;
+  final _pagesList = [
+    Noticias(),
+    Search(),
+    MyNews(),
+    CreateNew(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Noticias'),
-          bottom: TabBar(
-            tabs: _tabsList,
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentPageIndex,
+        children: _pagesList,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.indigo,
+        currentIndex: _currentPageIndex,
+        onTap: (index) {
+          setState(() {
+            _currentPageIndex = index;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.class_),
+            label: "Noticias",
           ),
-        ),
-        body: BlocProvider(
-          create: (context) => NoticiasBloc()..add(GetNewsEvent()),
-          child: BlocConsumer<NoticiasBloc, NoticiasState>(
-            listener: (context, state) {},
-            builder: (context, state) {
-              if (state is NoticiasSucessState) {
-                return TabBarView(
-                  children: [
-                    NoticiaDeporte(noticias: state.noticiasSportList),
-                    NoticiaNegocio(noticias: state.noticiasBusinessList),
-                  ],
-                );
-              }
-              return Center(child: Text("No hay noticias disponibles"));
-            },
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: "Buscar",
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bookmarks),
+            label: "MisNoticias",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.subject),
+            label: "Crear",
+          ),
+        ],
       ),
     );
   }

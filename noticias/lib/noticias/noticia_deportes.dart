@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:noticias/models/noticia.dart';
+import 'package:noticias/noticias/item_noticia.dart';
 
 class NoticiaDeporte extends StatefulWidget {
   final List<Noticia> noticias;
@@ -13,10 +14,11 @@ class _NoticiaDeporteState extends State<NoticiaDeporte> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          child: Text("Deportes: ${widget.noticias}"),
-        ),
+      body: ListView.builder(
+        itemCount: widget.noticias.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ItemNoticia(noticia: widget.noticias[index]);
+        },
       ),
     );
   }
